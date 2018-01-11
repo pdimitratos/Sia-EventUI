@@ -1,24 +1,4 @@
-
-const emptyNode = ({
-    array: []
-})
-
-const defaultActionDefinitions = ({
-    insertSingle: INSERT_SINGLE,
-    insertSingleSelector: action => action.record,
-    insertMultiple: INSERT_MULTIPLE,
-    insertMultipleSelector: action => action.records
-})
-
-const bsrNode = (actionDefinitions = defaultActionDefinitions, compare) =>
-(state = emptyNode, action) => {
-    switch(action.type){
-        case actionDefinitions.insertSingle:
-            return insertSingle(actionDefinitions, compare, state, action)
-        default:
-            return state
-    }
-}
+import defaultActionDefinitions from './defaultActionDefinitions'
 
 const insertSingle = (actionDefinitions, compare, state, action) => {
     const record = actionDefinitions.insertSingleSelector(action)
