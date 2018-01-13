@@ -1,9 +1,7 @@
 import defaultActionDefinitions from './defaultActionDefinitions'
 import { emptyNode } from './node'
 
-export const insertSingle = (actionDefinitions, compare, state, action) => {
-    const record = actionDefinitions.insertSingleSelector(action)
-
+export const insertSingle = (compare, state, record) => {
     if(!state || !state.pivot){ //Uninitialized child node
         return {
             pivot: record,
@@ -15,11 +13,6 @@ export const insertSingle = (actionDefinitions, compare, state, action) => {
     if(!comparison){ //Collision
         return state
     }
-
-    const insertRight = insertRightBuilder(compare)
-    const insertLeft = insertLeftBuilder(compare)
-    const pushPivotLeft = pushPivotLeftBuilder(compare)
-    const pushPivotRight = pushPivotRightBuilder(compare)
 
     const operationToPerform = comparison < 0
         //record less than pivot
@@ -40,18 +33,14 @@ export const insertSingle = (actionDefinitions, compare, state, action) => {
                 : pushPivotLeft
             : insertRight
 
-    return operationToPerform(state, record)
+    return operationToPerform(compare)(state, record)
 }
 
-const insertRightBuilder = (compare) => (localState, localRecord) => {
+const insertRight = (compare) => (localState, localRecord) => {
     const newRight = insertSingle(
-        defaultActionDefinitions,
         compare,
         localState.right ? localState.right : emptyNode,
-        {
-            type: defaultActionDefinitions.insertSingle,
-            record: localRecord
-        }
+        localRecord
     )
 
     const left = localState.left ? localState.left : emptyNode
@@ -63,15 +52,11 @@ const insertRightBuilder = (compare) => (localState, localRecord) => {
     }
 }
 
-const insertLeftBuilder = (compare) => (localState, localRecord) => {
+const insertLeft = (compare) => (localState, localRecord) => {
     const newLeft = insertSingle(
-        defaultActionDefinitions,
         compare,
         localState.left ? localState.left : emptyNode,
-        {
-            type: defaultActionDefinitions.insertSingle,
-            record: localRecord
-        }
+        localRecord
     )
 
     const right = localState.right ? localState.right : emptyNode
@@ -83,15 +68,11 @@ const insertLeftBuilder = (compare) => (localState, localRecord) => {
     }
 }
 
-const pushPivotRightBuilder = (compare) => (localState, localRecord) => {
+const pushPivotRight = (compare) => (localState, localRecord) => {
     const newRight = insertSingle(
-        defaultActionDefinitions,
         compare,
         localState.right ? localState.right : emptyNode,
-        {
-            type: defaultActionDefinitions.insertSingle,
-            record: localState.pivot
-        }
+        localState.pivot
     )
 
     const left = localState.left ? localState.left : emptyNode
@@ -104,15 +85,11 @@ const pushPivotRightBuilder = (compare) => (localState, localRecord) => {
     }
 }
 
-const pushPivotLeftBuilder = (compare) => (localState, localRecord) => {
+const pushPivotLeft = (compare) => (localState, localRecord) => {
     const newLeft = insertSingle(
-        defaultActionDefinitions,
         compare,
         localState.left ? localState.left : emptyNode,
-        {
-            type: defaultActionDefinitions.insertSingle,
-            record: localState.pivot
-        }
+        localState.pivot
     )
 
     const right = localState.right ? localState.right : emptyNode

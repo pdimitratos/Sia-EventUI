@@ -360,7 +360,6 @@ export default () => describe('insert single', function () {
                         }
                     })
                 })
-
             })
 
             describe('When state is a node with a pivot and a right child with a larger array than its left child', function () {
@@ -417,7 +416,4 @@ export default () => describe('insert single', function () {
             })
         })
     })
-
-
-
 })
