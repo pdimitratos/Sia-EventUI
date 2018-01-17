@@ -16,7 +16,7 @@ export default () => describe('insert single', function () {
             const expectedRecord = 1
             const state = emptyNode
             const action = buildAction(expectedRecord)
-            const result = insertSingle(defaultActionDefinitions, naiveCompare, state, action)
+            const result = insertSingle(naiveCompare, state, action)
             it('Should have pivot set to the record', function () {
                 expect(result.pivot).to.equal(expectedRecord)
             })
@@ -326,7 +326,7 @@ export default () => describe('insert single', function () {
                         array: [9]
                     }
                 }
-                const result = insertSingle(defaultActionDefinitions, naiveCompare, state, action)
+                const result = insertSingle(naiveCompare, state, action)
 
                 it('Should use the record as the new pivot value', function () {
                     expect(result.pivot).to.equal(record)
@@ -379,7 +379,7 @@ export default () => describe('insert single', function () {
                         }
                     }
                 }
-                const result = insertSingle(defaultActionDefinitions, naiveCompare, state, action)
+                const result = insertSingle(naiveCompare, state, action)
 
                 it('Should not change the pivot value', function () {
                     expect(result.pivot).to.equal(pivot)

@@ -64,31 +64,20 @@ export const insertMultiple = (compare, state, records, isKnownSorted = false) =
         const toAddBeforePivot = sortedRecords.slice(0, relativeIndexOfNewPivotInRecords)
         const toAddAfterPivot = sortedRecords.slice(relativeIndexOfNewPivotInRecords, sortedRecords.length)
 
-        const preBalancedLeft = insertMultiple(
+        const mergedLeft = mergeSortedArrays(
             compare,
-            oldLeft,
-            [state.pivot].concat(oldRight.array.slice(0, countOfRightElementsToBalanceLeft - 1)),
-            true
+            state.array.slice(0, oldLeft.array.length + countOfRightElementsToBalanceLeft),
+            toAddBeforePivot
         )
 
-        const truncatedRight = initializeTree(
+        const mergedRight = mergeSortedArrays(
             compare,
-            oldRight.array.slice(countOfRightElementsToBalanceLeft, oldRight.array.length)
+            oldRight.array.slice(countOfRightElementsToBalanceLeft, oldRight.array.length),
+            toAddAfterPivot
         )
 
-        const newLeft = insertMultiple(
-            compare,
-            preBalancedLeft,
-            toAddBeforePivot,
-            true
-        )
-
-        const newRight = insertMultiple(
-            compare,
-            truncatedRight,
-            toAddAfterPivot,
-            true
-        )
+        const newLeft = initializeTree(compare, mergedLeft)
+        const newRight = initializeTree(compare, mergedRight)
 
         return {
             pivot: newPivot,
@@ -105,31 +94,21 @@ export const insertMultiple = (compare, state, records, isKnownSorted = false) =
         const toAddBeforePivot = sortedRecords.slice(0, relativeIndexOfNewPivotInRecords)
         const toAddAfterPivot = sortedRecords.slice(relativeIndexOfNewPivotInRecords, sortedRecords.length)
 
-        const truncatedLeft = initializeTree(
+        const mergedLeft = mergeSortedArrays(
             compare,
-            oldLeft.array.slice(0, oldLeft.array.length - countOfLeftElementsToBalanceRight)
+            oldLeft.array.slice(0, oldLeft.array.length - countOfLeftElementsToBalanceRight),
+            toAddBeforePivot
         )
 
-        const preBalancedRight = insertMultiple(
+        const mergedRight = mergeSortedArrays(
             compare,
-            oldLeft,
-            [state.pivot].concat(oldRight.array.slice(0, countOfRightElementsToBalanceLeft - 1)),
-            true
+            state.array.slice(oldLeft.array.length - countOfLeftElementsToBalanceRight, state.array.length),
+            toAddAfterPivot
         )
 
-        const newLeft = insertMultiple(
-            compare,
-            truncatedLeft,
-            toAddBeforePivot,
-            true
-        )
+        const newLeft = initializeTree(compare, mergedLeft)
+        const newRight = initializeTree(compare, mergedRight)
 
-        const newRight = insertMultiple(
-            compare,
-            preBalancedRight,
-            toAddAfterPivot,
-            true
-        )
 
         return {
             pivot: newPivot,
@@ -160,6 +139,32 @@ const findIndexNotPast = (compare, sortedRecords, toFind) => {
         }
     }
     return testIndex
+}
+
+const mergeSortedArrays = (compare, arr1, arr2) => {
+    let i,j,k,collisions = 0 //i = j + k
+    let resultArray = new Array(arr1.length + arr2.length)
+    while (j + k < resultArray.length) {
+        const comparisonResult = compare(arr1[j], arr2[k])
+        if (comparisonResult === 0) {
+            resultArray[i] = arr1[j]
+            i++
+            j++
+            k++
+            collisions++
+        } else if (comparisonResult < 0) {
+            resultArray[i] = arr1[j]
+            i++
+            j++
+        } else {
+            resultArray[i] = arr2[k]
+            i++
+            k++
+        }
+    }
+    return collisions
+        ? resultArray.slice(0, resultArray.length - collisions)
+        : resultArray
 }
 
 
