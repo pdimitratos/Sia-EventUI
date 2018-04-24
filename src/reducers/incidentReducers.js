@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux'
+
 import * as incidentActions from 'actions/incidentActions'
+import state from 'reducers/incidentStateReducer'
 import buildFetching from 'reducers/reducerHelpers/fetching'
 import buildError from 'reducers/reducerHelpers/error'
 
@@ -114,7 +116,8 @@ const incidentReducer = combineReducers({
   fetchingByIncidentId,
   errorByIncidentId,
   fetchingByTicketId,
-  errorByTicketId
+  errorByTicketId,
+  state
 })
 
 export default incidentReducer

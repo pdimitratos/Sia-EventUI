@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import GlobalActions from 'components/Timeline/Playbook/GlobalActions'
+import DisplayState from 'components/Incident/DisplayState'
+import DemoHelper from 'components/Incident/EssDemoHelper'
 
 const styles = {
   activeStatus: { color: 'red' },
@@ -17,7 +19,9 @@ export const IncidentSummary = ({ incident, ticket, ticketSystem, ticketOriginId
     HeaderRow(ticketOriginId),
     TicketDetailsRow(ticketSystem, ticket),
     TitleRow(incident),
-    GlobalActionsRow(incident, ticketOriginId)
+    GlobalActionsRow(incident, ticketOriginId),
+    incident ? DisplayStateRow(incident.id) : null,
+    incident ? DemoHelperRow(incident.id) : null
   ]
 IncidentSummary.propTypes = {
   incident: PropTypes.object,
@@ -98,6 +102,24 @@ const GlobalActionsRow = (incident, ticketId) => [
     (key) => <GlobalActions
       incidentId={incident.id}
       ticketId={ticketId}
+      key={key}
+    />
+  ]
+]
+
+const DisplayStateRow = incidentId => [
+  [
+    (key) => <DisplayState
+      incidentId={incidentId}
+      key={key}
+    />
+  ]
+]
+
+const DemoHelperRow = incidentId => [
+  [
+    (key) => <DemoHelper
+      incidentId={incidentId}
       key={key}
     />
   ]

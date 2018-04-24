@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import { paginationActions, updatePagination, reduxBackedPromise } from 'actions/actionHelpers'
 import * as filterService from 'services/filterService'
 import * as notificationActions from 'actions/notificationActions'
+import * as incidentStateActions from 'actions/incidentStateActions'
 export const EVENTS = 'EVENTS'
 export const REQUEST_EVENT = 'REQUEST_EVENT'
 export const RECEIVE_EVENT = 'RECEIVE_EVENT'
@@ -34,10 +35,10 @@ export const fetchEvents = (filter) => reduxBackedPromise(
   getEventsActionSet(filter)
 )
 
-export const postEvent = (incidentId, eventTypeId = 0, data = {}, occurrenceTime = DateTime.utc()) => reduxBackedPromise(
-    postEventFetchArgs(incidentId, eventTypeId, data, occurrenceTime),
-    postEventActionSet(incidentId),
-    'POST'
+export const postEvent = (incidentId, eventTypeId = 0, data = {}, occurrenceTime = DateTime.utc(), fetchStateAfterward = false) => reduxBackedPromise(
+  postEventFetchArgs(incidentId, eventTypeId, data, occurrenceTime),
+  postEventActionSet(incidentId, fetchStateAfterward),
+  'POST'
 )
 
 export const getEventsEndPoint = (incidentId) => (incidentId ? 'incidents/' + incidentId + '/' : '') + 'events'
@@ -130,7 +131,7 @@ export const addEvent = (event, incidentId) => ({
   event
 })
 
-export const postEventActionSet = (incidentId) => ({
+export const postEventActionSet = (incidentId, fetchStateAfterward = false) => ({
   try: () => ({
     type: POST_EVENT_TRY,
     incidentId
@@ -144,6 +145,10 @@ export const postEventActionSet = (incidentId) => ({
     })
 
     dispatch(updatePagination())
+
+    if (fetchStateAfterward) {
+      dispatch(incidentStateActions.getIncidentState(incidentId))
+    }
   },
 
   fail: (failureReason) => ({
