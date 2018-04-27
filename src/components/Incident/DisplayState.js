@@ -25,31 +25,33 @@ export const DisplayStateComponent = ({
     </div>
 }
 
-export const recursiveStateDisplay = (stateSlice, key = 0) =>
+export const recursiveStateDisplay = (stateSlice, indentationFactor = 0, key = 0) =>
   typeof stateSlice === 'object'
   ? Array.isArray(stateSlice)
-    ? recursiveStateDisplayForArray(stateSlice)
-    : recursiveStateDisplayForObject(stateSlice)
-  : <div key={key}>{stateSlice}</div>
+    ? recursiveStateDisplayForArray(stateSlice, indentationFactor + 1)
+    : recursiveStateDisplayForObject(stateSlice, indentationFactor + 1)
+  : <div style={{'text-indent': indentationFactor * 5}} key={key}>{stateSlice}</div>
 
-export const recursiveStateDisplayForArray = (stateSlice, key = 0) => {
+export const recursiveStateDisplayForArray = (stateSlice, indentationFactor = 0, key = 0) => {
   let localKey = 0
-  return <div key={key}>
-    {stateSlice.map(child => recursiveStateDisplay(child, localKey++))}
+  return <div style={{'text-indent': indentationFactor * 5}} key={key}>
+    {stateSlice.map(child => recursiveStateDisplay(child, indentationFactor + 1, localKey++))}
   </div>
 }
 
-export const recursiveStateDisplayForObject = (stateSlice, key = 0) => {
+export const recursiveStateDisplayForObject = (stateSlice, indentationFactor = 0, key = 0) => {
   let localKey = 0
-  return <div key={key}>
-    {stateSlice.children && Object.keys(stateSlice.children).length
-      ? recursiveStateDisplay(stateSlice.children, localKey++)
-      : stateSlice.values
-        ? recursiveStateDisplayForArray(stateSlice.values, localKey++)
+  return <div style={{'text-indent': indentationFactor * 5}} key={key}>
+    {stateSlice.branches && Object.keys(stateSlice.branches).length
+      ? recursiveStateDisplay(stateSlice.branches, indentationFactor + 1, localKey++)
+      : stateSlice.leaves
+        ? recursiveStateDisplayForArray(stateSlice.leaves, indentationFactor + 1, localKey++)
         : Object.entries(stateSlice)
-        .map(slice => slice[1]
-            ? <div key={localKey++}>{slice[0]}:{recursiveStateDisplay(slice[1])}</div>
-            : null)
+          .map(slice => slice[1]
+              ? <div style={{'text-indent': (indentationFactor + 1) * 5}} key={localKey++}>
+                {slice[0]}:{recursiveStateDisplay(slice[1], indentationFactor + 2)}
+              </div>
+              : null)
     }
   </div>
 }
